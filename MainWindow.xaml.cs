@@ -94,31 +94,6 @@ namespace SnakeAsync
             }
         }
 
-        private async Task GrowingRightAsync(Canvas canv, Polyline _polyline, CancellationToken token)
-        {
-            while (true)
-            {
-                token.ThrowIfCancellationRequested();
-
-                bool shouldContinue = false;
-
-                await Dispatcher.InvokeAsync(() =>
-                {
-                    var lastPoint = _polyline.Points.LastOrDefault();
-                    shouldContinue = lastPoint.Y < canv.ActualHeight - 400;
-
-                    if (shouldContinue)
-                    {
-                        _polyline.Points.Add(new Point(lastPoint.X + 10, lastPoint.Y));
-                    }
-                }, System.Windows.Threading.DispatcherPriority.Render);
-
-                if (!shouldContinue) break;
-
-                await Task.Delay(30, token);
-            }
-        }
-
         private void ResetToken()
         {
             _cts.Cancel();
