@@ -8,8 +8,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="1400" Width="1400" FocusManager.FocusedElement="{Binding ElementName=canv}"
         StateChanged="Window_StateChanged"
+        WindowState="Maximized"
         WindowStartupLocation="Manual"
-        Left="0" Top="0" Loaded="Window_Loaded"        
+        Left="0" 
+        Top="0" 
+        Loaded="Window_Loaded"        
         >
 
     <Grid>

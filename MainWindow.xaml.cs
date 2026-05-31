@@ -109,10 +109,10 @@ namespace SnakeAsync
                 {
                     var lastPoint = snake.Points.LastOrDefault();
 
-                    shouldContinueV = lastPoint.Y < canv.ActualHeight - 100 && lastPoint.Y > 100;
-                    shouldContinueH = lastPoint.X < canv.ActualWidth - 100 && lastPoint.X > 100;
+                    shouldContinueV = lastPoint.Y < canv.ActualHeight - 100 && lastPoint.Y >= 100;
+                    shouldContinueH = lastPoint.X < canv.ActualWidth - 100 && lastPoint.X >= 100;
 
-                    if (true)
+                    if (shouldContinueH && shouldContinueV)
                     {
                         snake.Points.Add(new Point(lastPoint.X + direction.X, lastPoint.Y + direction.Y));
                         //Letztes Element entfernen, damit die Länge konstant bleibt
