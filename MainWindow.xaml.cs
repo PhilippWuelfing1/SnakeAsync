@@ -18,9 +18,11 @@ namespace SnakeAsync
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private CancellationTokenSource _cts = new CancellationTokenSource();
-        Rectangle _food = new Rectangle();
+        Rectangle? _food;
         private string? _snakeHead_x;
         private string? _snakeHead_y;
+        private string? _food_x;
+        private string? _food_y;
 
         public MainWindow()
         {
@@ -29,7 +31,6 @@ namespace SnakeAsync
             var head = snake.Points.Last(); 
             SnakeHead_x = head.X.ToString(); 
             SnakeHead_y = head.Y.ToString();
-            //spawnFood();
             canv.Focus();
         }
 
@@ -37,6 +38,48 @@ namespace SnakeAsync
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public string? Food_x
+        {
+            get
+            {
+                if(_food == null)
+                {
+                    return "0";
+                }
+                else if (_food.Name != "food")
+                {
+                    return "0";
+                }
+                return Canvas.GetLeft(_food).ToString();
+            }
+            set
+            {
+                _food_x = Canvas.GetLeft(_food).ToString();
+                OnPropertyChanged(nameof(Food_x));
+            }
+        }
+
+        public string? Food_y
+        {
+            get
+            {
+                if(_food == null)
+                {
+                    return "0";
+                }
+                else if (_food.Name != "food")
+                {
+                    return "0";
+                }
+                return Canvas.GetTop(_food).ToString();
+            }
+            set
+            {
+                _food_y = Canvas.GetTop(_food).ToString();
+                OnPropertyChanged(nameof(Food_y));
+            }
         }
 
 
@@ -124,10 +167,25 @@ namespace SnakeAsync
                     }
                     else
                     {
-
+                        if (!shouldContinueH)
+                        {
+                            //Am anderen Rand wieder auftauchen
+                            double x = lastPoint.X;
+                            double y = ((((lastPoint.Y + direction.Y + canv.ActualHeight) % canv.ActualHeight)));
+                            var newPoint = new Point(x, y);
+                            snake.Points.Add(newPoint);
+                        }
+                        if (!shouldContinueV)
+                        {
+                            //Am anderen Rand wieder auftauchen
+                            double x = ((((lastPoint.X + direction.X + canv.ActualWidth) % canv.ActualWidth)));
+                            double y = lastPoint.Y;
+                            var newPoint = new Point(x, y);
+                            snake.Points.Add(newPoint);
+                        }
                     }
 
-                    if(snake.Points.LastOrDefault().X == Canvas.GetLeft(_food) && snake.Points.LastOrDefault().Y == Canvas.GetTop(_food))
+                    if (snake.Points.LastOrDefault().X == Canvas.GetLeft(_food) && snake.Points.LastOrDefault().Y == Canvas.GetTop(_food))
                     {
                         // Food eaten
                         canv.Children.Remove(_food);
@@ -145,16 +203,25 @@ namespace SnakeAsync
         private void spawnFood()
         {
             _food = new Rectangle();
+            _food.Name = "food";
             _food.Height = 20;
             _food.Width = 20;
             _food.Fill = Brushes.Red;
             _food.StrokeThickness = 10;
 
             Random rnd = new Random();
-            int topAndLeft = rnd.Next(1, 1300);  
+            var w = SnakeWindow.ActualWidth;
+            var h = SnakeWindow.ActualHeight;
+            var leftAndTop = rnd.Next(1, Convert.ToInt32(SnakeWindow.ActualWidth - 200));
+            var topAndLeft = rnd.Next(1, Convert.ToInt32(SnakeWindow.ActualHeight - 200));
 
             Canvas.SetTop(_food, topAndLeft);
-            Canvas.SetLeft(_food, topAndLeft);
+            Canvas.SetLeft(_food, leftAndTop);
+
+            Food_x = leftAndTop.ToString();
+            Food_y = topAndLeft.ToString();
+            OnPropertyChanged(nameof(Food_x));
+            OnPropertyChanged(nameof(Food_y));
 
             canv.Children.Add(_food);
         }
@@ -177,6 +244,7 @@ namespace SnakeAsync
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             canv.Focus();
+            spawnFood();
         }
     }
 
