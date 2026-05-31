@@ -16,29 +16,20 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <!-- Zeilenhöhe passt sich dem Inhalt an -->
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <!-- Zeile nimmt den restlichen verfügbaren Platz ein -->
         </Grid.RowDefinitions>
-                  
-        <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">
+
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Foreground="Black">
             <TextBlock.Text>
-                <MultiBinding StringFormat="Snake: {0} , {1}">
+                <MultiBinding StringFormat=" {0} , {1}">
                     <Binding ElementName="SnakeWindow" Path="SnakeHead_x" />
                     <Binding ElementName="SnakeWindow" Path="SnakeHead_y" />
                 </MultiBinding>
             </TextBlock.Text>
         </TextBlock>
-
-        <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold">
-            <TextBlock.Text>
-                <MultiBinding StringFormat="Food: {0} , {1}">
-                    <Binding ElementName="SnakeWindow" Path="SnakeHead_x" />
-                    <Binding ElementName="SnakeWindow" Path="SnakeHead_y" />
-                </MultiBinding>
-            </TextBlock.Text>
-
-        <Canvas Grid.Row="2"  Name="canv"  PreviewKeyDown="canv_PreviewKeyDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Focusable="True">
+        
+        <Canvas Grid.Row="1"  Name="canv"  PreviewKeyDown="canv_PreviewKeyDown" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Focusable="True">
             <Polyline 
                     Name="snake" 
                     Points="100,100 100,110 100,120 100,130 100,140 100,150 100,160 100,170 100,180 100,190 100,200"
