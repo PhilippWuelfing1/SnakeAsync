@@ -1,5 +1,5 @@
 ﻿SnakeAsync
-
+1.0.0.0
 
 winexe
 C#
@@ -12,9 +12,9 @@ TRACE;DEBUG;NET;NET10_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_O
 D:\Entwicklung\C#\Snake\SnakeAsync\App.xaml
 11407045341
 
-5-1096431516
+71223098194
 206-1840375534
 MainWindow.xaml;
 
-False
+True
 

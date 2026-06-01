@@ -21,8 +21,8 @@ namespace SnakeAsync
         Rectangle? _food;
         private string? _snakeHead_x;
         private string? _snakeHead_y;
-        private string? _food_x;
-        private string? _food_y;
+        private double? _food_x;
+        private double? _food_y;
 
         public MainWindow()
         {
@@ -56,7 +56,7 @@ namespace SnakeAsync
             }
             set
             {
-                _food_x = Canvas.GetLeft(_food).ToString();
+                _food_x = Canvas.GetLeft(_food);
                 OnPropertyChanged(nameof(Food_x));
             }
         }
@@ -77,7 +77,7 @@ namespace SnakeAsync
             }
             set
             {
-                _food_y = Canvas.GetTop(_food).ToString();
+                _food_y = Canvas.GetTop(_food);
                 OnPropertyChanged(nameof(Food_y));
             }
         }
@@ -137,6 +137,16 @@ namespace SnakeAsync
                 _ = move(new Point(0, -10), canv, snake, _cts.Token);
                 e.Handled = true;
             }
+            else if (e.Key == Key.Space)
+            {
+                ResetToken();
+                e.Handled = true;
+            }
+        }
+
+        private void pause()
+        {
+            ResetToken();
         }
 
         private async Task move(Point direction, Canvas canv, Polyline snake, CancellationToken token)
@@ -150,70 +160,130 @@ namespace SnakeAsync
 
                 await Dispatcher.InvokeAsync(() =>
                 {
-                    var lastPoint = snake.Points.LastOrDefault();
+                    var lastHead = snake.Points.LastOrDefault();
+                    Point newHead = new Point(lastHead.X + direction.X, lastHead.Y + direction.Y);
 
-                    shouldContinueV = lastPoint.Y < canv.ActualHeight - 100 && lastPoint.Y >= 100;
-                    shouldContinueH = lastPoint.X < canv.ActualWidth - 100 && lastPoint.X >= 100;
+                    shouldContinueV = lastHead.Y < canv.ActualHeight - 100 && lastHead.Y >= 100;
+                    shouldContinueH = lastHead.X < canv.ActualWidth && lastHead.X >= 100;
 
                     if (shouldContinueH && shouldContinueV)
                     {
-                        snake.Points.Add(new Point(lastPoint.X + direction.X, lastPoint.Y + direction.Y));
+                        snake.Points.Add(new Point(lastHead.X + direction.X, lastHead.Y + direction.Y));
+
                         //Letztes Element entfernen, damit die Länge konstant bleibt
                         snake.Points.RemoveAt(0);
 
                         OnPropertyChanged(nameof(SnakeHead_x));
                         OnPropertyChanged(nameof(SnakeHead_y));
 
+/*                        if(_food_x < newHead.X + 5 && _food_y > newHead.X - 5)
+                        {
+                            if (_food_y < newHead.Y + 30 && _food_y > newHead.Y - 30)
+                            {
+                                canv.Children.Remove(_food);
+                                spawnFood();
+                            }
+                        }*/
+
+                        if(_food_x < newHead.X + 5 && _food_y > newHead.X - 5 && _food_y < newHead.Y + 30 && _food_y > newHead.Y - 30)
+                        {
+                            canv.Children.Remove(_food);
+                            spawnFood();
+                        }
                     }
                     else
                     {
                         if (!shouldContinueH)
                         {
-                            //Am anderen Rand wieder auftauchen
-                            double x = lastPoint.X;
-                            double y = ((((lastPoint.Y + direction.Y + canv.ActualHeight) % canv.ActualHeight)));
-                            var newPoint = new Point(x, y);
-                            snake.Points.Add(newPoint);
+                            //Horizontal am anderen Rand wieder auftauchen
+                            spawnOnOtherSideHor(direction.X);
                         }
                         if (!shouldContinueV)
                         {
-                            //Am anderen Rand wieder auftauchen
-                            double x = ((((lastPoint.X + direction.X + canv.ActualWidth) % canv.ActualWidth)));
-                            double y = lastPoint.Y;
-                            var newPoint = new Point(x, y);
-                            snake.Points.Add(newPoint);
+                            //Vertikal am anderen Rand wieder auftauchen
+                            spawnOnOtherSideVer(direction.Y);
                         }
-                    }
-
-                    if (snake.Points.LastOrDefault().X == Canvas.GetLeft(_food) && snake.Points.LastOrDefault().Y == Canvas.GetTop(_food))
-                    {
-                        // Food eaten
-                        canv.Children.Remove(_food);
-                        spawnFood();
                     }
 
                 }, System.Windows.Threading.DispatcherPriority.Render);
 
-                //if (!shouldContinue) break;
-
-                await Task.Delay(30, token);
+                await Task.Delay(100, token);
             }
+        }
+
+        private void spawnOnOtherSideHor(double direction)
+        {
+            var y = snake.Points.LastOrDefault().Y;
+            var length = snake.Points.Count;
+            snake.Points.Clear();
+            double newHead_x = 0;
+
+            if (direction > 0)
+            {
+                for (int i = 0; i < length - 1; i++)
+                {
+                    snake.Points.Add(new Point(newHead_x, y));
+                    newHead_x += 10;
+                }
+            }
+
+            else
+            {
+                newHead_x = canv.ActualWidth;
+
+                for (int i = 0; i < length - 1; i++)
+                {
+                    snake.Points.Add(new Point(newHead_x, y));
+                    newHead_x -= 10;
+                    
+                }
+            }
+
+        }
+
+        private void spawnOnOtherSideVer(double direction)
+        {
+            var x = snake.Points.LastOrDefault().X;
+            var length = snake.Points.Count;
+            snake.Points.Clear();
+            double newHead_y = 0;
+
+            if (direction > 0)
+            {
+                for (int i = 0; i < length - 1; i++)
+                {
+                    snake.Points.Add(new Point(x, newHead_y));
+                    newHead_y += 10;
+                }
+            }
+
+            else
+            {
+                newHead_y = canv.ActualHeight;
+
+                for (int i = 0; i < length - 1; i++)
+                {
+                    snake.Points.Add(new Point(x, newHead_y));
+                    newHead_y -= 10;
+                }
+            }
+
         }
 
         private void spawnFood()
         {
             _food = new Rectangle();
             _food.Name = "food";
-            _food.Height = 20;
-            _food.Width = 20;
+            _food.Height = 30;
+            _food.Width = 30;
             _food.Fill = Brushes.Red;
             _food.StrokeThickness = 10;
 
             Random rnd = new Random();
-            var w = SnakeWindow.ActualWidth;
-            var h = SnakeWindow.ActualHeight;
             var leftAndTop = rnd.Next(1, Convert.ToInt32(SnakeWindow.ActualWidth - 200));
             var topAndLeft = rnd.Next(1, Convert.ToInt32(SnakeWindow.ActualHeight - 200));
+            //var topAndLeft = 600;
+            //var leftAndTop = 600;
 
             Canvas.SetTop(_food, topAndLeft);
             Canvas.SetLeft(_food, leftAndTop);
