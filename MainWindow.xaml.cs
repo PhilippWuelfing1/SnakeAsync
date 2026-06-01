@@ -23,6 +23,8 @@ namespace SnakeAsync
         private string? _snakeHead_y;
         private double? _food_x;
         private double? _food_y;
+        private bool _pause = false;
+        private int _speed = 50;
 
         public MainWindow()
         {
@@ -38,6 +40,16 @@ namespace SnakeAsync
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public int Speed
+        {
+            get { return _speed; }
+            set
+            {
+                _speed = value;
+                OnPropertyChanged(nameof(Speed));
+            }
         }
 
         public string? Food_x
@@ -139,7 +151,15 @@ namespace SnakeAsync
             }
             else if (e.Key == Key.Space)
             {
-                ResetToken();
+                if (!_pause)
+                {
+                    ResetToken();
+                }
+                else
+                {
+
+                }
+
                 e.Handled = true;
             }
         }
@@ -176,18 +196,18 @@ namespace SnakeAsync
                         OnPropertyChanged(nameof(SnakeHead_x));
                         OnPropertyChanged(nameof(SnakeHead_y));
 
-/*                        if(_food_x < newHead.X + 5 && _food_y > newHead.X - 5)
+                        if (_food_x < newHead.X + 5 && _food_y > newHead.X - 5)
                         {
                             if (_food_y < newHead.Y + 30 && _food_y > newHead.Y - 30)
                             {
                                 canv.Children.Remove(_food);
                                 spawnFood();
                             }
-                        }*/
+                        }
 
-                        if(_food_x < newHead.X + 5 && _food_y > newHead.X - 5 && _food_y < newHead.Y + 30 && _food_y > newHead.Y - 30)
+                        if (_food_x < newHead.X + 5 && _food_y > newHead.X - 5 && _food_y < newHead.Y + 40 && _food_y > newHead.Y - 40)
                         {
-                            canv.Children.Remove(_food);
+                              canv.Children.Remove(_food);
                             spawnFood();
                         }
                     }
@@ -207,7 +227,7 @@ namespace SnakeAsync
 
                 }, System.Windows.Threading.DispatcherPriority.Render);
 
-                await Task.Delay(100, token);
+                await Task.Delay(Speed, token);
             }
         }
 
@@ -312,9 +332,9 @@ namespace SnakeAsync
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            canv.Focus();
+        {;
             spawnFood();
+            canv.Focus();
         }
     }
 
