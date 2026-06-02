@@ -19,12 +19,7 @@ namespace SnakeAsync
     {
         private CancellationTokenSource _cts = new CancellationTokenSource();
         Rectangle? _food;
-        private string? _snakeHead_x;
-        private string? _snakeHead_y;
-        private double? _food_x;
-        private double? _food_y;
         private bool _pause = false;
-        private int _speed = 50;
 
         public MainWindow()
         {
@@ -33,6 +28,7 @@ namespace SnakeAsync
             var head = snake.Points.Last(); 
             SnakeHead_x = head.X.ToString(); 
             SnakeHead_y = head.Y.ToString();
+            SnakeLaenge = snake.Points.Count;
             canv.Focus();
         }
 
@@ -42,6 +38,8 @@ namespace SnakeAsync
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+
+        private int _speed = 30;
         public int Speed
         {
             get { return _speed; }
@@ -52,19 +50,33 @@ namespace SnakeAsync
             }
         }
 
-        public string? Food_x
+
+        private int _snakeLaenge = 0;
+        public int SnakeLaenge
+        {
+            get => _snakeLaenge;
+            set
+            {
+                _snakeLaenge = value;
+                OnPropertyChanged(nameof(SnakeLaenge));
+            }
+        }
+
+
+        private double? _food_x;
+        public double? Food_x
         {
             get
             {
                 if(_food == null)
                 {
-                    return "0";
+                    return 0;
                 }
                 else if (_food.Name != "food")
                 {
-                    return "0";
+                    return 0;
                 }
-                return Canvas.GetLeft(_food).ToString();
+                return Canvas.GetLeft(_food);
             }
             set
             {
@@ -73,19 +85,21 @@ namespace SnakeAsync
             }
         }
 
-        public string? Food_y
+
+        private double? _food_y;
+        public double? Food_y
         {
             get
             {
                 if(_food == null)
                 {
-                    return "0";
+                    return 0;
                 }
                 else if (_food.Name != "food")
                 {
-                    return "0";
+                    return 0;
                 }
-                return Canvas.GetTop(_food).ToString();
+                return Canvas.GetTop(_food);
             }
             set
             {
@@ -95,7 +109,7 @@ namespace SnakeAsync
         }
 
 
-
+        private string? _snakeHead_x;
         public string? SnakeHead_x
         {
             get
@@ -109,6 +123,7 @@ namespace SnakeAsync
             }
         }
 
+        private string? _snakeHead_y;
         public string? SnakeHead_y
         {
             get
@@ -157,7 +172,7 @@ namespace SnakeAsync
                 }
                 else
                 {
-
+                    //Direction erforderlich
                 }
 
                 e.Handled = true;
@@ -167,6 +182,11 @@ namespace SnakeAsync
         private void pause()
         {
             ResetToken();
+        }
+
+        private void foodEaten()
+        {
+
         }
 
         private async Task move(Point direction, Canvas canv, Polyline snake, CancellationToken token)
@@ -183,12 +203,12 @@ namespace SnakeAsync
                     var lastHead = snake.Points.LastOrDefault();
                     Point newHead = new Point(lastHead.X + direction.X, lastHead.Y + direction.Y);
 
-                    shouldContinueV = lastHead.Y < canv.ActualHeight - 100 && lastHead.Y >= 100;
-                    shouldContinueH = lastHead.X < canv.ActualWidth && lastHead.X >= 100;
+                    shouldContinueV = lastHead.Y < canv.ActualHeight && lastHead.Y >= 10;
+                    shouldContinueH = lastHead.X < canv.ActualWidth && lastHead.X >= 10;
 
                     if (shouldContinueH && shouldContinueV)
                     {
-                        snake.Points.Add(new Point(lastHead.X + direction.X, lastHead.Y + direction.Y));
+                        snake.Points.Add(newHead);
 
                         //Letztes Element entfernen, damit die Länge konstant bleibt
                         snake.Points.RemoveAt(0);
@@ -196,20 +216,16 @@ namespace SnakeAsync
                         OnPropertyChanged(nameof(SnakeHead_x));
                         OnPropertyChanged(nameof(SnakeHead_y));
 
-                        if (_food_x < newHead.X + 5 && _food_y > newHead.X - 5)
+                        if (Food_x < newHead.X + 35 && Food_x > newHead.X - 35 && Food_y < newHead.Y + 35 && Food_y > newHead.Y - 35)
                         {
-                            if (_food_y < newHead.Y + 30 && _food_y > newHead.Y - 30)
-                            {
-                                canv.Children.Remove(_food);
-                                spawnFood();
-                            }
-                        }
-
-                        if (_food_x < newHead.X + 5 && _food_y > newHead.X - 5 && _food_y < newHead.Y + 40 && _food_y > newHead.Y - 40)
-                        {
-                              canv.Children.Remove(_food);
+                            canv.Children.Remove(_food);
+                            //Snake verlängern
+                            var tail = snake.Points.FirstOrDefault();
+                            var newTail = new Point(tail.X + direction.X * -1, tail.Y + direction.Y * -1);
+                            snake.Points.Insert(0, newTail);
                             spawnFood();
                         }
+
                     }
                     else
                     {
@@ -234,13 +250,13 @@ namespace SnakeAsync
         private void spawnOnOtherSideHor(double direction)
         {
             var y = snake.Points.LastOrDefault().Y;
-            var length = snake.Points.Count;
-            snake.Points.Clear();
+            int length = snake.Points.Count;
+            snake.Points.Clear();            
             double newHead_x = 0;
 
             if (direction > 0)
             {
-                for (int i = 0; i < length - 1; i++)
+                for (int i = 0; i < length; i++)
                 {
                     snake.Points.Add(new Point(newHead_x, y));
                     newHead_x += 10;
@@ -251,7 +267,7 @@ namespace SnakeAsync
             {
                 newHead_x = canv.ActualWidth;
 
-                for (int i = 0; i < length - 1; i++)
+                for (int i = 0; i < length; i++)
                 {
                     snake.Points.Add(new Point(newHead_x, y));
                     newHead_x -= 10;
@@ -264,13 +280,13 @@ namespace SnakeAsync
         private void spawnOnOtherSideVer(double direction)
         {
             var x = snake.Points.LastOrDefault().X;
-            var length = snake.Points.Count;
+            int length = snake.Points.Count;
             snake.Points.Clear();
             double newHead_y = 0;
 
             if (direction > 0)
             {
-                for (int i = 0; i < length - 1; i++)
+                for (int i = 0; i < length; i++)
                 {
                     snake.Points.Add(new Point(x, newHead_y));
                     newHead_y += 10;
@@ -281,11 +297,12 @@ namespace SnakeAsync
             {
                 newHead_y = canv.ActualHeight;
 
-                for (int i = 0; i < length - 1; i++)
+                for (int i = 0; i <= length; i++)
                 {
                     snake.Points.Add(new Point(x, newHead_y));
                     newHead_y -= 10;
                 }
+                snake.Points.RemoveAt(0);
             }
 
         }
@@ -308,8 +325,8 @@ namespace SnakeAsync
             Canvas.SetTop(_food, topAndLeft);
             Canvas.SetLeft(_food, leftAndTop);
 
-            Food_x = leftAndTop.ToString();
-            Food_y = topAndLeft.ToString();
+            Food_x = leftAndTop;
+            Food_y = topAndLeft;
             OnPropertyChanged(nameof(Food_x));
             OnPropertyChanged(nameof(Food_y));
 
