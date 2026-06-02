@@ -38,10 +38,10 @@
                    Text="{Binding ElementName=SnakeWindow, Path=SnakeLaenge, StringFormat=Länge: {0}}">
         </TextBlock>
 
-        <Canvas Grid.Row="2" Name="canv" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" PreviewKeyDown="canv_PreviewKeyDown" Focusable="True" Grid.RowSpan="1">
+        <Canvas Grid.Row="2" Name="canv" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" PreviewKeyDown="canv_PreviewKeyDown" Focusable="True" Grid.RowSpan="3">
             <Polyline 
                     Name="snake" 
-                    Points="100,100 110,100 120,100 130,100 140,100 150,100 160,100 170,100 180,100 190,100 200,100 "
+                    Points="100,400 120, 400, 140, 400, 160, 400, 180, 400, 200, 400 220, 400 240, 400 260, 400 280, 400 300, 400"
                     Stroke="Green" 
                     StrokeThickness="15" 
                     StrokeLineJoin="Bevel" />

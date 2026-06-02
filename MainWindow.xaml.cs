@@ -136,32 +136,43 @@ namespace SnakeAsync
                 OnPropertyChanged(nameof(SnakeHead_y));
             }
         }
+
+        private Point _direction;
+        public Point Direction
+        {
+            get => _direction;
+            set
+            {
+                _direction = value;
+                OnPropertyChanged(nameof(Direction));
+            }
+        }
       
         private async void canv_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.D)
             {
                 ResetToken();
-                _ = move(new Point(10, 0), canv, snake, _cts.Token);
+                _ = move(new Point(20, 0), canv, snake, _cts.Token);
                 e.Handled = true;
             }
             else if (e.Key == Key.S)
             {
                 ResetToken();
-                _ = move(new Point(0, 10), canv, snake, _cts.Token);
+                _ = move(new Point(0, 20), canv, snake, _cts.Token);
                 e.Handled = true;
             }
 
             else if (e.Key == Key.A)
             {
                 ResetToken();
-                _ = move(new Point(-10, 0), canv, snake, _cts.Token);
+                _ = move(new Point(-20, 0), canv, snake, _cts.Token);
                 e.Handled = true;
             }
             else if (e.Key == Key.W)
             {
                 ResetToken();
-                _ = move(new Point(0, -10), canv, snake, _cts.Token);
+                _ = move(new Point(0, -20), canv, snake, _cts.Token);
                 e.Handled = true;
             }
             else if (e.Key == Key.Space)
@@ -186,7 +197,18 @@ namespace SnakeAsync
 
         private void foodEaten()
         {
-
+            canv.Children.Remove(_food);
+            //Snake verlängern
+            var tail = snake.Points.FirstOrDefault();
+            var newTail = new Point(tail.X + Direction.X * -1, tail.Y + Direction.Y * -1);
+            snake.Points.Insert(0, newTail);
+            tail = snake.Points.FirstOrDefault();
+            newTail = new Point(tail.X + Direction.X * -1, tail.Y + Direction.Y * -1);
+            snake.Points.Insert(0, newTail);
+            tail = snake.Points.FirstOrDefault();
+            newTail = new Point(tail.X + Direction.X * -1, tail.Y + Direction.Y * -1);
+            snake.Points.Insert(0, newTail);
+            SnakeLaenge = snake.Points.Count;
         }
 
         private async Task move(Point direction, Canvas canv, Polyline snake, CancellationToken token)
@@ -203,8 +225,8 @@ namespace SnakeAsync
                     var lastHead = snake.Points.LastOrDefault();
                     Point newHead = new Point(lastHead.X + direction.X, lastHead.Y + direction.Y);
 
-                    shouldContinueV = lastHead.Y < canv.ActualHeight && lastHead.Y >= 10;
-                    shouldContinueH = lastHead.X < canv.ActualWidth && lastHead.X >= 10;
+                    shouldContinueV = lastHead.Y < canv.ActualHeight && lastHead.Y >= 20;
+                    shouldContinueH = lastHead.X < canv.ActualWidth && lastHead.X >= 20;
 
                     if (shouldContinueH && shouldContinueV)
                     {
@@ -218,12 +240,7 @@ namespace SnakeAsync
 
                         if (Food_x < newHead.X + 35 && Food_x > newHead.X - 35 && Food_y < newHead.Y + 35 && Food_y > newHead.Y - 35)
                         {
-                            canv.Children.Remove(_food);
-                            //Snake verlängern
-                            var tail = snake.Points.FirstOrDefault();
-                            var newTail = new Point(tail.X + direction.X * -1, tail.Y + direction.Y * -1);
-                            snake.Points.Insert(0, newTail);
-                            SnakeLaenge = snake.Points.Count;
+                            foodEaten();
                             spawnFood();
                         }
 
@@ -260,10 +277,9 @@ namespace SnakeAsync
                 for (int i = 0; i < length; i++)
                 {
                     snake.Points.Add(new Point(newHead_x, y));
-                    newHead_x += 10;
+                    newHead_x += 20;
                 }
             }
-
             else
             {
                 newHead_x = canv.ActualWidth;
@@ -271,11 +287,10 @@ namespace SnakeAsync
                 for (int i = 0; i < length; i++)
                 {
                     snake.Points.Add(new Point(newHead_x, y));
-                    newHead_x -= 10;
+                    newHead_x -= 20;
                     
                 }
             }
-
         }
 
         private void spawnOnOtherSideVer(double direction)
@@ -290,10 +305,9 @@ namespace SnakeAsync
                 for (int i = 0; i < length; i++)
                 {
                     snake.Points.Add(new Point(x, newHead_y));
-                    newHead_y += 10;
+                    newHead_y += 20;
                 }
             }
-
             else
             {
                 newHead_y = canv.ActualHeight;
@@ -301,11 +315,10 @@ namespace SnakeAsync
                 for (int i = 0; i <= length; i++)
                 {
                     snake.Points.Add(new Point(x, newHead_y));
-                    newHead_y -= 10;
+                    newHead_y -= 20;
                 }
                 snake.Points.RemoveAt(0);
             }
-
         }
 
         private void spawnFood()
