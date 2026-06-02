@@ -34,8 +34,8 @@
             </TextBlock.Text>
         </TextBlock>
 
-        <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="200" Height="30" FontSize="20" FontWeight="Bold" Foreground="Black" Background="Yellow"
-                   Text="{Binding ElementName=SnakeWindow, Path=SnakeLaenge}">
+        <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="200" Height="30" FontSize="20" FontWeight="Bold" Foreground="Black" Background="Red"
+                   Text="{Binding ElementName=SnakeWindow, Path=SnakeLaenge, StringFormat=Länge: {0}}">
         </TextBlock>
 
         <Canvas Grid.Row="2" Name="canv" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" PreviewKeyDown="canv_PreviewKeyDown" Focusable="True" Grid.RowSpan="1">

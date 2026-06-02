@@ -223,6 +223,7 @@ namespace SnakeAsync
                             var tail = snake.Points.FirstOrDefault();
                             var newTail = new Point(tail.X + direction.X * -1, tail.Y + direction.Y * -1);
                             snake.Points.Insert(0, newTail);
+                            SnakeLaenge = snake.Points.Count;
                             spawnFood();
                         }
 

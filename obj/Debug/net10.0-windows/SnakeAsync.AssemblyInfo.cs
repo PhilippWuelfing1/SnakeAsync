@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SnakeAsync")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+218293b6378a6a3e62d1886892c448794b3fb739")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ca77a4abc329e7978ed6f241aaa8d99b242be193")]
 [assembly: System.Reflection.AssemblyProductAttribute("SnakeAsync")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SnakeAsync")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
