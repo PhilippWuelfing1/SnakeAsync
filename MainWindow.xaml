@@ -12,11 +12,11 @@
         WindowStartupLocation="Manual"
         Left="0" 
         Top="0" 
-        Loaded="Window_Loaded"        
+        Loaded="Window_Loaded"
+        Background="White"
         >
 
     <Grid>
-
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <!-- Zeilenhöhe passt sich dem Inhalt an -->
@@ -38,6 +38,7 @@
                    Text="{Binding ElementName=SnakeWindow, Path=SnakeLaenge, StringFormat=Länge: {0}}">
         </TextBlock>
 
+        <Border Grid.Row="2" BorderBrush="Black" BorderThickness="5">
         <Canvas Grid.Row="2" Name="canv" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" PreviewKeyDown="canv_PreviewKeyDown" Focusable="True" Grid.RowSpan="3">
             <Polyline 
                     Name="snake" 
@@ -46,6 +47,7 @@
                     StrokeThickness="15" 
                     StrokeLineJoin="Bevel" />
         </Canvas>
+        </Border>
 
     </Grid>
 </Window>

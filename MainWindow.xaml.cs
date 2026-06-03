@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Globalization;
 using System.Text;
 using System.Windows;
@@ -25,10 +26,8 @@ namespace SnakeAsync
         {
             InitializeComponent();
             this.DataContext = this;
-            var head = snake.Points.Last(); 
-            SnakeHead_x = head.X.ToString(); 
-            SnakeHead_y = head.Y.ToString();
-            SnakeLaenge = snake.Points.Count;
+            setSnakeHead();
+            startMove();
             canv.Focus();
         }
 
@@ -36,6 +35,30 @@ namespace SnakeAsync
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void setSnakeHead()
+        {
+            var head = snake.Points.Last();
+            SnakeHead_x = head.X.ToString();
+            SnakeHead_y = head.Y.ToString();
+        }
+
+        private void startMove()
+        {
+            Direction = new Point(PointWidth, 0);
+            _ = move(Direction, canv, snake, _cts.Token);
+        }
+
+        private double _pointWidth = 20;
+        public double PointWidth
+        {
+            get { return _pointWidth; }
+            set
+            {
+                _pointWidth = value;
+                OnPropertyChanged(nameof(PointWidth));
+            }
         }
 
 
@@ -51,7 +74,7 @@ namespace SnakeAsync
         }
 
 
-        private int _snakeLaenge = 0;
+        private int _snakeLaenge = 11;
         public int SnakeLaenge
         {
             get => _snakeLaenge;
@@ -153,62 +176,64 @@ namespace SnakeAsync
             if (e.Key == Key.D)
             {
                 ResetToken();
-                _ = move(new Point(20, 0), canv, snake, _cts.Token);
+                Direction = new Point(PointWidth, 0);
+                _ = move(Direction, canv, snake, _cts.Token);
                 e.Handled = true;
             }
             else if (e.Key == Key.S)
             {
                 ResetToken();
-                _ = move(new Point(0, 20), canv, snake, _cts.Token);
+                Direction = new Point(0, PointWidth);
+                _ = move(Direction, canv, snake, _cts.Token);
                 e.Handled = true;
             }
 
             else if (e.Key == Key.A)
             {
                 ResetToken();
-                _ = move(new Point(-20, 0), canv, snake, _cts.Token);
+                Direction = new Point(-PointWidth, 0);
+                _ = move(Direction, canv, snake, _cts.Token);
                 e.Handled = true;
             }
             else if (e.Key == Key.W)
             {
                 ResetToken();
-                _ = move(new Point(0, -20), canv, snake, _cts.Token);
+                Direction = new Point(0, -PointWidth);
+                _ = move(Direction, canv, snake, _cts.Token);
                 e.Handled = true;
             }
             else if (e.Key == Key.Space)
             {
                 if (!_pause)
-                {
+                {                    
                     ResetToken();
+                    _pause = true;
                 }
                 else
                 {
-                    //Direction erforderlich
+                    _ = move(Direction, canv, snake, _cts.Token); 
+                    _pause = false;
                 }
 
                 e.Handled = true;
             }
         }
 
-        private void pause()
-        {
-            ResetToken();
-        }
-
         private void foodEaten()
         {
             canv.Children.Remove(_food);
-            //Snake verlängern
-            var tail = snake.Points.FirstOrDefault();
-            var newTail = new Point(tail.X + Direction.X * -1, tail.Y + Direction.Y * -1);
-            snake.Points.Insert(0, newTail);
-            tail = snake.Points.FirstOrDefault();
-            newTail = new Point(tail.X + Direction.X * -1, tail.Y + Direction.Y * -1);
-            snake.Points.Insert(0, newTail);
-            tail = snake.Points.FirstOrDefault();
-            newTail = new Point(tail.X + Direction.X * -1, tail.Y + Direction.Y * -1);
-            snake.Points.Insert(0, newTail);
+            addTail();
             SnakeLaenge = snake.Points.Count;
+        }
+
+        private void addTail()
+        {
+            for(int i = 0; i < 3; i++)
+            {
+                var tail = snake.Points.FirstOrDefault();
+                var newTail = new Point(tail.X + Direction.X * -1, tail.Y + Direction.Y * -1);
+                snake.Points.Insert(0, newTail);
+            }
         }
 
         private async Task move(Point direction, Canvas canv, Polyline snake, CancellationToken token)
@@ -225,8 +250,8 @@ namespace SnakeAsync
                     var lastHead = snake.Points.LastOrDefault();
                     Point newHead = new Point(lastHead.X + direction.X, lastHead.Y + direction.Y);
 
-                    shouldContinueV = lastHead.Y < canv.ActualHeight && lastHead.Y >= 20;
-                    shouldContinueH = lastHead.X < canv.ActualWidth && lastHead.X >= 20;
+                    shouldContinueV = lastHead.Y < canv.ActualHeight && lastHead.Y >= PointWidth;
+                    shouldContinueH = lastHead.X < canv.ActualWidth && lastHead.X >= PointWidth;
 
                     if (shouldContinueH && shouldContinueV)
                     {
@@ -277,7 +302,7 @@ namespace SnakeAsync
                 for (int i = 0; i < length; i++)
                 {
                     snake.Points.Add(new Point(newHead_x, y));
-                    newHead_x += 20;
+                    newHead_x += PointWidth;
                 }
             }
             else
@@ -287,7 +312,7 @@ namespace SnakeAsync
                 for (int i = 0; i < length; i++)
                 {
                     snake.Points.Add(new Point(newHead_x, y));
-                    newHead_x -= 20;
+                    newHead_x -= PointWidth;
                     
                 }
             }
@@ -305,19 +330,18 @@ namespace SnakeAsync
                 for (int i = 0; i < length; i++)
                 {
                     snake.Points.Add(new Point(x, newHead_y));
-                    newHead_y += 20;
+                    newHead_y += PointWidth;
                 }
             }
             else
             {
                 newHead_y = canv.ActualHeight;
 
-                for (int i = 0; i <= length; i++)
+                for (int i = 0; i < length; i++)
                 {
                     snake.Points.Add(new Point(x, newHead_y));
-                    newHead_y -= 20;
+                    newHead_y -= PointWidth;
                 }
-                snake.Points.RemoveAt(0);
             }
         }
 
@@ -333,8 +357,6 @@ namespace SnakeAsync
             Random rnd = new Random();
             var leftAndTop = rnd.Next(1, Convert.ToInt32(SnakeWindow.ActualWidth - 200));
             var topAndLeft = rnd.Next(1, Convert.ToInt32(SnakeWindow.ActualHeight - 200));
-            //var topAndLeft = 600;
-            //var leftAndTop = 600;
 
             Canvas.SetTop(_food, topAndLeft);
             Canvas.SetLeft(_food, leftAndTop);
