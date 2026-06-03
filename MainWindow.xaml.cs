@@ -85,6 +85,16 @@ namespace SnakeAsync
             }
         }
 
+        private List<Rectangle> _foodCollection = new List<Rectangle>();
+        public List<Rectangle> FoodCollection
+        {
+            get => _foodCollection;
+            set
+            {
+                _foodCollection = value;
+                OnPropertyChanged(nameof(FoodCollection));
+            }
+        }
 
         private double? _food_x;
         public double? Food_x
@@ -219,9 +229,10 @@ namespace SnakeAsync
             }
         }
 
-        private void foodEaten()
+        private void foodEaten(Rectangle food)
         {
-            canv.Children.Remove(_food);
+            canv.Children.Remove(food);
+            FoodCollection.Remove(food);
             addTail();
             SnakeLaenge = snake.Points.Count;
         }
@@ -233,6 +244,16 @@ namespace SnakeAsync
                 var tail = snake.Points.FirstOrDefault();
                 var newTail = new Point(tail.X + Direction.X * -1, tail.Y + Direction.Y * -1);
                 snake.Points.Insert(0, newTail);
+            }
+        }
+
+        private void checkHitFood()
+        {
+            var f = FoodCollection.Where<Rectangle>(f => Canvas.GetLeft(f) < snake.Points.LastOrDefault().X + 35 && Canvas.GetLeft(f) > snake.Points.LastOrDefault().X - 35 && Canvas.GetTop(f) < snake.Points.LastOrDefault().Y + 35 && Canvas.GetTop(f) > snake.Points.LastOrDefault().Y - 35).FirstOrDefault();
+            if (f != null)
+            {
+                foodEaten(f);
+                spawnFood();
             }
         }
 
@@ -263,11 +284,7 @@ namespace SnakeAsync
                         OnPropertyChanged(nameof(SnakeHead_x));
                         OnPropertyChanged(nameof(SnakeHead_y));
 
-                        if (Food_x < newHead.X + 35 && Food_x > newHead.X - 35 && Food_y < newHead.Y + 35 && Food_y > newHead.Y - 35)
-                        {
-                            foodEaten();
-                            spawnFood();
-                        }
+                        checkHitFood();
 
                     }
                     else
@@ -347,26 +364,32 @@ namespace SnakeAsync
 
         private void spawnFood()
         {
-            _food = new Rectangle();
-            _food.Name = "food";
-            _food.Height = 30;
-            _food.Width = 30;
-            _food.Fill = Brushes.Red;
-            _food.StrokeThickness = 10;
+            int i = FoodCollection.Count;
+             while (i < 3)
+            {
+                _food = new Rectangle();
+                _food.Name = "food";
+                _food.Height = 30;
+                _food.Width = 30;
+                _food.Fill = Brushes.Red;
+                _food.StrokeThickness = 10;
 
-            Random rnd = new Random();
-            var leftAndTop = rnd.Next(1, Convert.ToInt32(SnakeWindow.ActualWidth - 200));
-            var topAndLeft = rnd.Next(1, Convert.ToInt32(SnakeWindow.ActualHeight - 200));
+                Random rnd = new Random();
+                var leftAndTop = rnd.Next(1, Convert.ToInt32(SnakeWindow.ActualWidth - 200));
+                var topAndLeft = rnd.Next(1, Convert.ToInt32(SnakeWindow.ActualHeight - 200));
 
-            Canvas.SetTop(_food, topAndLeft);
-            Canvas.SetLeft(_food, leftAndTop);
+                Canvas.SetTop(_food, topAndLeft);
+                Canvas.SetLeft(_food, leftAndTop);
 
-            Food_x = leftAndTop;
-            Food_y = topAndLeft;
-            OnPropertyChanged(nameof(Food_x));
-            OnPropertyChanged(nameof(Food_y));
+                Food_x = leftAndTop;
+                Food_y = topAndLeft;
+                OnPropertyChanged(nameof(Food_x));
+                OnPropertyChanged(nameof(Food_y));
 
-            canv.Children.Add(_food);
+                canv.Children.Add(_food);
+                FoodCollection.Add(_food);
+                i++;
+            }
         }
 
         private void ResetToken()
