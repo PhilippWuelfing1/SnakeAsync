@@ -257,6 +257,20 @@ namespace SnakeAsync
             }
         }
 
+        private bool checkCollision(Point p)
+        {
+            var result = snake.Points.Contains(p);
+            for (int i = 0; i < snake.Points.Count; i++)
+            {
+                if (snake.Points[i].X == p.X && snake.Points[i].Y == p.Y)
+                {
+                    return true;
+                }
+
+            }
+            return false;
+        }
+
         private async Task move(Point direction, Canvas canv, Polyline snake, CancellationToken token)
         {
             while (true)
@@ -276,10 +290,17 @@ namespace SnakeAsync
 
                     if (shouldContinueH && shouldContinueV)
                     {
+                        bool collisioned = checkCollision(newHead);
                         snake.Points.Add(newHead);
 
                         //Letztes Element entfernen, damit die Länge konstant bleibt
                         snake.Points.RemoveAt(0);
+
+                        if (collisioned)
+                        {
+                            ResetToken();
+                            MessageBox.Show("Game Over.");
+                        }
 
                         OnPropertyChanged(nameof(SnakeHead_x));
                         OnPropertyChanged(nameof(SnakeHead_y));

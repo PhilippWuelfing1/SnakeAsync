@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Entwicklung\\C#\\Snake\\SnakeAsync\\SnakeAsync.csproj": {}
+    "D:\\Entwicklung\\C#\\SnakeAsync\\SnakeAsync.csproj": {}
   },
   "projects": {
-    "D:\\Entwicklung\\C#\\Snake\\SnakeAsync\\SnakeAsync.csproj": {
+    "D:\\Entwicklung\\C#\\SnakeAsync\\SnakeAsync.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Entwicklung\\C#\\Snake\\SnakeAsync\\SnakeAsync.csproj",
+        "projectUniqueName": "D:\\Entwicklung\\C#\\SnakeAsync\\SnakeAsync.csproj",
         "projectName": "SnakeAsync",
-        "projectPath": "D:\\Entwicklung\\C#\\Snake\\SnakeAsync\\SnakeAsync.csproj",
+        "projectPath": "D:\\Entwicklung\\C#\\SnakeAsync\\SnakeAsync.csproj",
         "packagesPath": "C:\\Users\\phili\\.nuget\\packages\\",
-        "outputPath": "D:\\Entwicklung\\C#\\Snake\\SnakeAsync\\obj\\",
+        "outputPath": "D:\\Entwicklung\\C#\\SnakeAsync\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
           "C:\\Users\\phili\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -45,7 +41,7 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.300"
+        "SdkAnalysisLevel": "10.0.400"
       },
       "frameworks": {
         "net10.0-windows": {
@@ -70,7 +66,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",
